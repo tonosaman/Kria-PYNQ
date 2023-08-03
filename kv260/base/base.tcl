@@ -34,7 +34,7 @@ set script_folder [_tcl::get_script_folder]
 ################################################################
 # Check if script is running in correct Vivado version.
 ################################################################
-set scripts_vivado_version 2020.2
+set scripts_vivado_version 2023.1
 set current_vivado_version [version -short]
 
 if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
@@ -58,7 +58,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 # Add user local board path and check if the board file exists
 set_param board.repoPaths [get_property LOCAL_ROOT_DIR [xhub::get_xstores xilinx_board_store]]
 
-set board [get_board_parts "*:kv260:*" -latest_file_version]
+set board [get_board_parts "*:kv260_som:*" -latest_file_version]
 if { ${board} eq "" } {
    puts ""
    catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "${board} board file is not found. Please install the board file either manually or using the Xilinx Board Store"}
@@ -157,16 +157,16 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 user.org:user:address_remap:1.0\
-xilinx.com:ip:axi_iic:2.0\
+xilinx.com:ip:axi_iic:2.1\
 xilinx.com:ip:axi_intc:4.1\
 xilinx.com:ip:axi_register_slice:2.1\
 xilinx.com:ip:xlslice:1.0\
 xilinx.com:ip:mdm:3.2\
-xilinx.com:ip:util_ds_buf:2.1\
+xilinx.com:ip:util_ds_buf:2.2\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:dfx_axi_shutdown_manager:1.0\
 xilinx.com:ip:xlconcat:2.1\
-xilinx.com:ip:zynq_ultra_ps_e:3.3\
+xilinx.com:ip:zynq_ultra_ps_e:3.5\
 xilinx.com:user:dff_en_reset_vector:1.0\
 xilinx.com:ip:axi_gpio:2.0\
 xilinx.com:user:io_switch:1.1\
@@ -179,7 +179,7 @@ xilinx.com:ip:axi_vdma:6.3\
 xilinx.com:ip:axis_subset_converter:1.1\
 xilinx.com:ip:v_demosaic:1.1\
 xilinx.com:ip:v_gamma_lut:1.1\
-xilinx.com:ip:mipi_csi2_rx_subsystem:5.1\
+xilinx.com:ip:mipi_csi2_rx_subsystem:5.3\
 xilinx.com:hls:pixel_pack_2:1.0\
 xilinx.com:ip:v_proc_ss:2.3\
 xilinx.com:ip:lmb_v10:3.0\
@@ -440,7 +440,7 @@ proc create_hier_cell_mipi { parentCell nameHier } {
  ] $gpio_ip_reset
 
   # Create instance: mipi_csi2_rx_subsyst, and set properties
-  set mipi_csi2_rx_subsyst [ create_bd_cell -type ip -vlnv xilinx.com:ip:mipi_csi2_rx_subsystem:5.1 mipi_csi2_rx_subsyst ]
+  set mipi_csi2_rx_subsyst [ create_bd_cell -type ip -vlnv xilinx.com:ip:mipi_csi2_rx_subsystem:5.3 mipi_csi2_rx_subsyst ]
   set_property -dict [ list \
    CONFIG.CLK_LANE_IO_LOC {D7} \
    CONFIG.CLK_LANE_IO_LOC_NAME {IO_L13P_T2L_N0_GC_QBC_66} \
@@ -590,7 +590,7 @@ proc create_hier_cell_iop_pmod0 { parentCell nameHier } {
  ] $gpio
 
   # Create instance: iic, and set properties
-  set iic [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_iic:2.0 iic ]
+  set iic [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_iic:2.1 iic ]
 
   # Create instance: intc, and set properties
   set intc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_intc:4.1 intc ]
@@ -767,7 +767,7 @@ proc create_root_design { parentCell } {
  ] $address_remap_0
 
   # Create instance: axi_iic, and set properties
-  set axi_iic [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_iic:2.0 axi_iic ]
+  set axi_iic [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_iic:2.1 axi_iic ]
 
   # Create instance: axi_intc, and set properties
   set axi_intc [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_intc:4.1 axi_intc ]
@@ -812,7 +812,7 @@ proc create_root_design { parentCell } {
   create_hier_cell_mipi [current_bd_instance .] mipi
 
   # Create instance: pmod_buf, and set properties
-  set pmod_buf [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 pmod_buf ]
+  set pmod_buf [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.2 pmod_buf ]
   set_property -dict [ list \
    CONFIG.C_BUF_TYPE {IOBUF} \
    CONFIG.C_SIZE {8} \
@@ -845,7 +845,7 @@ proc create_root_design { parentCell } {
  ] $xlconcat_1
 
   # Create instance: zynq_ultra_ps_e_0, and set properties
-  set zynq_ultra_ps_e_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.3 zynq_ultra_ps_e_0 ]
+  set zynq_ultra_ps_e_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.5 zynq_ultra_ps_e_0 ]
   set_property -dict [ list \
    CONFIG.PSU_BANK_0_IO_STANDARD {LVCMOS18} \
    CONFIG.PSU_BANK_1_IO_STANDARD {LVCMOS18} \
@@ -1249,11 +1249,11 @@ proc create_root_design { parentCell } {
    CONFIG.PSU__CRL_APB__PL0_REF_CTRL__DIVISOR1 {1} \
    CONFIG.PSU__CRL_APB__PL0_REF_CTRL__FREQMHZ {100} \
    CONFIG.PSU__CRL_APB__PL0_REF_CTRL__SRCSEL {IOPLL} \
-   CONFIG.PSU__CRL_APB__PL1_REF_CTRL__ACT_FREQMHZ {187.498123} \
-   CONFIG.PSU__CRL_APB__PL1_REF_CTRL__DIVISOR0 {8} \
+   CONFIG.PSU__CRL_APB__PL1_REF_CTRL__ACT_FREQMHZ {199.998001} \
+   CONFIG.PSU__CRL_APB__PL1_REF_CTRL__DIVISOR0 {5} \
    CONFIG.PSU__CRL_APB__PL1_REF_CTRL__DIVISOR1 {1} \
    CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {200} \
-   CONFIG.PSU__CRL_APB__PL1_REF_CTRL__SRCSEL {RPLL} \
+   CONFIG.PSU__CRL_APB__PL1_REF_CTRL__SRCSEL {IOPLL} \
    CONFIG.PSU__CRL_APB__PL2_REF_CTRL__ACT_FREQMHZ {299.997009} \
    CONFIG.PSU__CRL_APB__PL2_REF_CTRL__DIVISOR0 {5} \
    CONFIG.PSU__CRL_APB__PL2_REF_CTRL__DIVISOR1 {1} \
