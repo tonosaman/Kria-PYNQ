@@ -15,6 +15,10 @@ set_property PACKAGE_PIN G11 [get_ports iic_scl_io]
 set_property PACKAGE_PIN F10 [get_ports iic_sda_io]
 set_property IOSTANDARD LVCMOS33 [get_ports iic_*]
 
+# Fan Speed Enable
+set_property PACKAGE_PIN A12 [get_ports {fan_en_b}]
+set_property IOSTANDARD LVCMOS33 [get_ports {fan_en_b}]
+
 # PMOD
 set_property PACKAGE_PIN B11      [get_ports "pmod[7]"] ;# Bank  45 VCCO - som240_1_b13 - IO_L10P_AD10P_45
 set_property PACKAGE_PIN D11      [get_ports "pmod[6]"] ;# Bank  45 VCCO - som240_1_b13 - IO_L8N_HDGC_45

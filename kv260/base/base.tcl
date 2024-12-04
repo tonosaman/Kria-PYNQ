@@ -746,9 +746,6 @@ proc create_root_design { parentCell } {
   current_bd_instance $parentObj
 
 
-  # Create interface ports
-  set cam_gpio [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:gpio_rtl:1.0 cam_gpio ]
-
   set iic [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 iic ]
 
   set mipi_phy_if [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:mipi_phy_rtl:1.0 mipi_phy_if ]
@@ -756,6 +753,18 @@ proc create_root_design { parentCell } {
 
   # Create ports
   set pmod [ create_bd_port -dir IO -from 7 -to 0 pmod ]
+  set fan_en_b [ create_bd_port -dir O -from 0 -to 0 fan_en_b ]
+  set cam_gpio [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:gpio_rtl:1.0 cam_gpio ]
+
+  # Create instance: fan controller
+  set xlslice_ttc_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice xlslice_ttc_0 ]
+  set_property -dict [ list \
+   CONFIG.DIN_FROM {2} \
+   CONFIG.DIN_TO {2} \
+   CONFIG.DIN_WIDTH {3} \
+   CONFIG.DOUT_WIDTH {1} \
+  ] $xlslice_ttc_0
+  connect_bd_net -net xlslice_ttc_0_Dout [get_bd_pins xlslice_ttc_0/Dout] [get_bd_ports fan_en_b]
 
   # Create instance: address_remap_0, and set properties
   set address_remap_0 [ create_bd_cell -type ip -vlnv user.org:user:address_remap:1.0 address_remap_0 ]
@@ -1476,7 +1485,8 @@ proc create_root_design { parentCell } {
    CONFIG.PSU__SWDT1__RESET__ENABLE {0} \
    CONFIG.PSU__TTC0__CLOCK__ENABLE {0} \
    CONFIG.PSU__TTC0__PERIPHERAL__ENABLE {1} \
-   CONFIG.PSU__TTC0__WAVEOUT__ENABLE {0} \
+   CONFIG.PSU__TTC0__WAVEOUT__ENABLE {1} \
+   CONFIG.PSU__TTC0__WAVEOUT__IO {EMIO} \
    CONFIG.PSU__TTC1__CLOCK__ENABLE {0} \
    CONFIG.PSU__TTC1__PERIPHERAL__ENABLE {1} \
    CONFIG.PSU__TTC1__WAVEOUT__ENABLE {0} \
@@ -1499,6 +1509,7 @@ proc create_root_design { parentCell } {
  ] $zynq_ultra_ps_e_0
 
   # Create interface connections
+  connect_bd_net -net zynq_ultra_ps_e_0_emio_ttc0_wave_o [get_bd_pins zynq_ultra_ps_e_0/emio_ttc0_wave_o] [get_bd_pins xlslice_ttc_0/Din]
   connect_bd_intf_net -intf_net S00_AXI_1 [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins iop_pmod0/M07_AXI]
   connect_bd_intf_net -intf_net address_remap_0_M_AXI_out [get_bd_intf_pins address_remap_0/M_AXI_out] [get_bd_intf_pins axi_register_slice_0/S_AXI]
   connect_bd_intf_net -intf_net axi_iic_0_IIC [get_bd_intf_ports iic] [get_bd_intf_pins axi_iic/IIC]
