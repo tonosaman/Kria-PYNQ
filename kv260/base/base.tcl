@@ -1586,16 +1586,16 @@ proc create_root_design { parentCell } {
   current_bd_instance $oldCurInst
 
   # Create PFM attributes
-  set_property PFM_NAME {xilinx.com:xd:${overlay_name}:1.0} [get_files [current_bd_design].bd]
+  set_property PFM_NAME {xilinx.com:xd:${design_name}:1.0} [get_files [current_bd_design].bd]
 
   set_property PFM.CLOCK { \
     pl_clk0 {id "0" is_default "true" proc_sys_reset "rst_ps8_0_99M" status "fixed"} \
-    } [get_bd_cells $zynq_ultra_ps_e_0]
+    } [get_bd_cells zynq_ultra_ps_e_0]
   set_property PFM.AXI_PORT { \
     S_AXI_HP1_FPD {memport "S_AXI_HP"} \
     S_AXI_LPD {memport "S_AXI_HP"} \
     M_AXI_HPM0_LPD {memport "M_AXI_GP"} \
-    } [get_bd_cells $zynq_ultra_ps_e_0]
+    } [get_bd_cells zynq_ultra_ps_e_0]
 
   validate_bd_design
   save_bd_design

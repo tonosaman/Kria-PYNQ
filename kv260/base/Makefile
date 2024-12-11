@@ -12,9 +12,12 @@ all: pynq_hls block_design bitstream check_timing
 
 pynq_hls:
 	make -C ../../pynq/boards/ZCU104/base/ hls_ip
+	vivado -mode batch -source ./ip/build_hls_ip.tcl -notrace
 
 block_design:
-	vivado -mode batch -source $(overlay_name).tcl -notrace
+	vivado -mode batch -notrace \
+		-source $(overlay_name).tcl \
+		-source add_img_flip.tcl
 
 bitstream:
 	vivado -mode batch -source build_bitstream.tcl -notrace
